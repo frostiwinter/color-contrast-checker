@@ -1,13 +1,7 @@
-.wrapper {
+.inputs_wrapper {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-}
-
-.color-box {
-  width: 100px;
-  height: 100px;
-  border: 1px solid black;
 }
 
 .input-row {
@@ -15,4 +9,32 @@
   flex-direction: row;
   gap: 1rem;
   align-items: center;
+}
+
+.color-text {
+  margin: 0;
+  padding: 0.5rem 1rem;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.generated_criteria {
+  padding: 0 0.5rem;
+  justify-content: center;
+}
+
+.table_label {
+  writing-mode: tb-rl;
+  transform: rotate(-180deg);
+}
+
+.checker {
+  width: 16px;
+}
+
+.checker.is-pass {
+  color: green;
+}
+
+.checker.is-fail {
+  color: red;
 }
