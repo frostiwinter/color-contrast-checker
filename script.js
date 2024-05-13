@@ -73,7 +73,7 @@ function getColorsFromFields() {
       colorList.push(i.value);
     }
   }
-  
+
   return colorList;
 }
 
@@ -82,24 +82,13 @@ function getColorsFromFields() {
  */
 function createButtons() {
   const button1 = document.querySelector(".button.is-generate");
-  const button2 = document.querySelector(".button.is-check");
 
   button1.addEventListener("click", generateColorTable);
-  button2.addEventListener("click", function() {
-    var color1 = hexToRgb("#ffffff");
-    var color2 = hexToRgb("#5f1bd6");
-
-    var L1 = getLuminance(color1.r, color1.g, color1.b);
-    var L2 = getLuminance(color2.r, color2.g, color2.b);
-
-    console.log(getRelativeLuminance(L1, L2));
-
-  });
 
 }
 
 /* generate color permutations to get all combinations
-*/
+ */
 function getColorPermutations(arr) {
   if (arr.length === 1) {
     return [arr];
@@ -121,38 +110,57 @@ function getColorPermutations(arr) {
 }
 
 /* generate color rows
-*/
+ */
 function generateColorTable() {
-	const removeColorRowGroup = document.querySelectorAll(".generated_color-row");
-	const colorList = getColorPermutations(getColorsFromFields());
+  const removeColorRowGroup = document.querySelectorAll(".generated_color-row");
+  const colorList = getColorPermutations(getColorsFromFields());
+
+  // add luminance value to the list
+  for (const colorGroup of colorList) {
+    var color1 = hexToRgb(colorGroup[0]);
+    var foregoundLuminance = getLuminance(color1.r, color1.g, color1.b);
+    console.log(foregoundLuminance);
+
+    var color2 = hexToRgb(colorGroup[1]);
+    var backgoundLuminance = getLuminance(color2.r, color2.g, color2.b);
+    console.log(backgoundLuminance);
+
+    var luminance = getRelativeLuminance(foregoundLuminance, backgoundLuminance);
+    console.log(luminance);
+
+    colorGroup.push(luminance);
+  }
+
+  console.log(colorList);
+
   const colorTable = document.querySelector("table");
   var colorCombinations = colorList.length;
-  
+
   function generatedColorRow() {
-  	return '<tr class="generated_color-row"><td class="generated_color-ratio"><div class="color-box"><p class="color-text">The quick brown fox jumped over the lazy doggo</p></div></td><td class="generated_criteria"></td><td class="generated_criteria"></td><td class="generated_criteria"></td></tr>';
+    return '<tr class="generated_color-row"><td class="generated_color-ratio"><div class="color-box"><p class="color-text">The quick brown fox jumped over the lazy doggo</p></div></td><td class="generated_criteria"></td><td class="generated_criteria"></td><td class="generated_criteria"></td></tr>';
   }
-  
+
   // remove rows
   for (var i = 0; i < removeColorRowGroup.length; i++) {
-  	colorTable.innerHTML -= removeColorRowGroup[i];
+    colorTable.innerHTML -= removeColorRowGroup[i];
   }
-  
+
   // generate the rows
   for (var i = 0; i < colorList.length; i++) {
-  	colorTable.innerHTML += generatedColorRow();
+    colorTable.innerHTML += generatedColorRow();
   }
-  
+
   const colorBoxGroup = document.querySelectorAll(".color-box");
   const colorTextGroup = document.querySelectorAll(".color-text");
-  
+
   //console.log(colorBoxGroup.length);
-  
+
   // generate background colors
   for (var i = 0; i < colorBoxGroup.length; i++) {
-  	colorBoxGroup[i].style.backgroundColor = colorList[i][0];
+    colorBoxGroup[i].style.backgroundColor = colorList[i][0];
     colorTextGroup[i].style.color = colorList[i][1];
   }
-  
+
   //console.log(colorList);
 }
 
