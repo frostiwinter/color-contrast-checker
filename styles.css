@@ -1,0 +1,18 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.color-box {
+  width: 100px;
+  height: 100px;
+  border: 1px solid black;
+}
+
+.input-row {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  align-items: center;
+}
