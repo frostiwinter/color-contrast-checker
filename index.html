@@ -2,33 +2,44 @@
 <html>
 
   <head>
-    <link rel="stylesheet" href="styles.css">
   </head>
 
 
   <body>
-    <div class="wrapper">
+    <div class="inputs_wrapper">
       <div class="input-row">
-        1.<input class="input-color" type="text">or<input class="input-picker" type="color">
+        1.<input class="input-color" type="text">or<input class="input-picker" type="color"><button class="button is-remove-color">x</button>
       </div>
       <div class="input-row">
-        2.<input class="input-color" type="text">or<input class="input-picker" type="color">
-      </div>
-      <div class="input-row">
-        3.<input class="input-color" type="text">or<input class="input-picker" type="color">
-      </div>
-      <div class="input-row">
-        4.<input class="input-color" type="text">or<input class="input-picker" type="color">
+        2.<input class="input-color" type="text">or<input class="input-picker" type="color"><button class="button is-remove-color">x</button>
       </div>
     </div>
     <br>
     <button class="button is-generate">Generate</button>
     <button class="button is-check">Check Contrast</button>
+    <button class="button is-add-color">Add Color</button>
 
-    <script src="script.js"></script>
-
+    <table>
+      <!-- Table headers -->
+      <tr>
+        <th></th>
+        <th class="table_label">WCAG AA 3</th>
+        <th class="table_label">WCAG AAA 4.5</th>
+        <th class="table_label">WCAG AAA 7</th>
+      </tr>
+      <!-- Generated Color row 
+      <tr class="generated_color-row">
+        <td class="generated_color-ratio">
+          <div class="color-box">
+            <p class="color-text">The quick brown fox jumped over the lazy doggo</p>
+          </div>
+        </td>
+        <td class="generated_criteria"></td>
+        <td class="generated_criteria"></td>
+        <td class="generated_criteria"></td>
+      </tr> -->
+    </table>
 
   </body>
-
 
 </html>
