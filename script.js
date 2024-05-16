@@ -112,67 +112,76 @@ function getColorPermutations(arr) {
 /* generate color rows
  */
 function generateColorTable() {
-  const removeColorRowGroup = document.querySelectorAll(".generated_color-row");
   const colorList = getColorPermutations(getColorsFromFields());
-
-  // add luminance value to the list
-  for (const colorGroup of colorList) {
-    var color1 = hexToRgb(colorGroup[0]);
-    var foregoundLuminance = getLuminance(color1.r, color1.g, color1.b);
-    console.log(foregoundLuminance);
-
-    var color2 = hexToRgb(colorGroup[1]);
-    var backgoundLuminance = getLuminance(color2.r, color2.g, color2.b);
-    console.log(backgoundLuminance);
-
-    var luminance = getRelativeLuminance(foregoundLuminance, backgoundLuminance);
-    console.log(luminance);
-
-    colorGroup.push(luminance);
-  }
-
-  console.log(colorList);
+  // console.log(colorList);
 
   const colorTable = document.querySelector("table");
-  var colorCombinations = colorList.length;
 
-  function generatedColorRow() {
+  function generateLabels() {
+    return '<tr><th></th><th class="table_label">WCAG AA 3</th><th class="table_label">WCAG AAA 4.5</th><th class="table_label">WCAG AAA 7</th></tr>';
+  }
+
+  function generateColorRow() {
     return '<tr class="generated_color-row"><td class="generated_color-ratio"><div class="color-box"><p class="color-text">The quick brown fox jumped over the lazy doggo</p></div></td><td class="generated_criteria"></td><td class="generated_criteria"></td><td class="generated_criteria"></td></tr>';
   }
 
-  // remove rows
-  for (var i = 0; i < removeColorRowGroup.length; i++) {
-    colorTable.innerHTML -= removeColorRowGroup[i];
-  }
+  // remove rows and reset labels
+  colorTable.innerHTML = "";
+  colorTable.innerHTML += generateLabels();
+  //console.log(colorList.length);
 
   // generate the rows
   for (var i = 0; i < colorList.length; i++) {
-    colorTable.innerHTML += generatedColorRow();
+    if (i == colorList.length) {
+      break;
+    }
+
+    colorTable.innerHTML += generateColorRow();
+
+    // generate text and background colors
+    const colorBoxGroup = document.querySelectorAll(".color-box");
+    const colorTextGroup = document.querySelectorAll(".color-text");
+    //console.log(colorBoxGroup.length);
+
+    colorTextGroup[i].style.color = colorList[i][0];
+    colorBoxGroup[i].style.backgroundColor = colorList[i][1];
+
+    // generate luminance per color group
+    var foregroundColor = hexToRgb(rgbToHex(colorTextGroup[i].style.color));
+    var backgroundColor = hexToRgb(rgbToHex(colorBoxGroup[i].style.backgroundColor));
+
+    var foregroundLuminance = getLuminance(foregroundColor.r, foregroundColor.g, foregroundColor.b);
+    var backgroundLuminance = getLuminance(backgroundColor.r, backgroundColor.g, backgroundColor.b);
+
+    var relativeLuminance = getRelativeLuminance(foregroundLuminance, backgroundLuminance);
+    console.log(relativeLuminance);
+
+    // generate WCAG pass or fail
+    const colorRow = document.querySelectorAll(".generated_color-row")[i];
+    generateWCAGTable(relativeLuminance, colorRow, relativeLuminance);
+
+
   }
-
-  const colorBoxGroup = document.querySelectorAll(".color-box");
-  const colorTextGroup = document.querySelectorAll(".color-text");
-
-  //console.log(colorBoxGroup.length);
-
-  // generate background colors
-  for (var i = 0; i < colorBoxGroup.length; i++) {
-    colorBoxGroup[i].style.backgroundColor = colorList[i][0];
-    colorTextGroup[i].style.color = colorList[i][1];
-  }
-
-  //console.log(colorList);
 }
 
 /* generates the color contrast table
  */
-function generateTable(wcagValue) {
+function generateWCAGTable(wcagValue, colorRow, relativeLuminance) {
   const criteriaIsPass = '<svg class="checker is-pass" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z" fill="currentColor"/></svg>';
   const criteriaIsFail = '<svg class="checker is-fail" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c9.4-9.4 24.6-9.4 33.9 0l47 47 47-47c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-47 47 47 47c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-47-47-47 47c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l47-47-47-47c-9.4-9.4-9.4-24.6 0-33.9z" fill="currentColor"/></svg>';
 
   // populate if pass or fail  
-  var criteriaOutput = document.getElementsByClassName("generated_criteria");
-
+  const children = colorRow.childNodes;
+  const wcagCriteria = [3, 4.5, 7];
+  
+  for (var i = 0; i < wcagCriteria.length; i++) {
+  	if (relativeLuminance >= wcagCriteria[i]) {
+    	children[i + 1].innerHTML += criteriaIsPass;
+    }
+    else {
+    	children[i + 1].innerHTML += criteriaIsFail;
+    }
+  }
 }
 
 function startApp() {
@@ -187,10 +196,20 @@ function startApp() {
     addEventListenersToRemoveButtons();
   });
 
-  generateTable();
+  // generateWCAGTable();
 }
 
 startApp();
+
+function rgbToHex(rgb) {
+  rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+
+  function hexCode(i) {
+    return ("0" + parseInt(i).toString(16)).slice(-2);
+  }
+  return "#" + hexCode(rgb[1]) + hexCode(rgb[2]) +
+    hexCode(rgb[3]);
+}
 
 function hexToRgb(hex) {
   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
